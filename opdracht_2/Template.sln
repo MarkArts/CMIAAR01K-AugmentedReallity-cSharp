@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template", "Template\Template.csproj", "{466F9415-05DB-415E-8CAA-6239751B2409}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content", "Content\Content.csproj", "{2EFB85AC-8892-454F-8E29-DAD8A0C0C285}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageUtilities", "ImageUtilities\ImageUtilities.csproj", "{717EB259-0699-4D83-B3CC-8D6BBADC4302}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{466F9415-05DB-415E-8CAA-6239751B2409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{466F9415-05DB-415E-8CAA-6239751B2409}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{466F9415-05DB-415E-8CAA-6239751B2409}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{466F9415-05DB-415E-8CAA-6239751B2409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EFB85AC-8892-454F-8E29-DAD8A0C0C285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EFB85AC-8892-454F-8E29-DAD8A0C0C285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EFB85AC-8892-454F-8E29-DAD8A0C0C285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EFB85AC-8892-454F-8E29-DAD8A0C0C285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{717EB259-0699-4D83-B3CC-8D6BBADC4302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{717EB259-0699-4D83-B3CC-8D6BBADC4302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{717EB259-0699-4D83-B3CC-8D6BBADC4302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{717EB259-0699-4D83-B3CC-8D6BBADC4302}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
