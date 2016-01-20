@@ -59,7 +59,7 @@ namespace Template
     {        
         static void Main(string[] args)
         {
-            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"C:\Users\Mark\Documents\CMIAAR01K\opdracht_1\Content\Content\forest.jpg");
+            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"Content\forest.jpg");
 
             Color[,] greyImg = MultiMap(img, c =>
             {

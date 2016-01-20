@@ -30,7 +30,7 @@ namespace Template
 
         static void Main(string[] args)
         {
-            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"E:\Documents\Visual Studio 2015\Projects\CMIAAR01K-AugmentedReallity-cSharp\opdracht_2\Content\Content\minion.jpg");
+            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"Content\minion.jpg");
 
             Color[,] nearImg = Resize(img, new Resultion(1920*2, 1080*2), Method.Nearest);
             Color[,] BilImg = Resize(img, new Resultion(1920*2, 1080*2), Method.Bilinear);

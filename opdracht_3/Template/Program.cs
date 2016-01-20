@@ -16,15 +16,10 @@ namespace Template
 
         static void Main(string[] args)
         {
-            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"E:\School\jaar 5\CMIAAR01K\opdracht_3\Content\Content\forest.jpg");
+            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"Content/forest.jpg");
 
             KMEansPixel[] pixels = colorsToPixels(img);
-            KMEansPixel[] kmeans = kMean(pixels, 6, 3);
-            kmeans = kMean(colorsToPixels(img), 7, 3);
-            kmeans = kMean(colorsToPixels(img), 6, 3);
-            kmeans = kMean(colorsToPixels(img), 7, 3);
-            kmeans = kMean(colorsToPixels(img), 6, 3);
-            kmeans = kMean(colorsToPixels(img), 7, 3);
+            KMEansPixel[] kmeans = kMean(pixels, 6, 4);
 
             Color[,] c = pixelsToColors(kmeans);
 
