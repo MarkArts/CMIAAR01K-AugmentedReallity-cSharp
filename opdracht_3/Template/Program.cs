@@ -47,8 +47,6 @@ namespace Template
 
         static KMEansPixel[] kMean(KMEansPixel[] pixels, int clustersAmount, int itterations)
         {
-            Console.WriteLine(clustersAmount.ToString() + " " + itterations.ToString());
-
             Random random = new Random(43);
             Vector3[] centroids = new Vector3[clustersAmount];
 
@@ -56,11 +54,7 @@ namespace Template
             for (int i = 0; i < centroids.Length; i++)
             {
                 centroids[i] = new Vector3(121, 49, 124);
-               // Console.WriteLine(centroids[i].ToString());
             }
-
-            centroids[0] = new Vector3(121, 49, 124);
-            centroids[1] = new Vector3(121, 49, 124);
 
             // We limmit the itterations for performance reasons
             for (int i = 0; i < itterations; i++)
@@ -72,7 +66,7 @@ namespace Template
 
                     for (int c = 0; c < centroids.Length; c++) // <--- but this c# lolz
                     {
-                        if (!Vector3.Equals(centroids[group], centroids[c]) && Vector3.Distance(pixels[p].Color, centroids[c]) < Vector3.Distance(pixels[p].Color, centroids[group]))
+                        if (Vector3.Distance(pixels[p].Color, centroids[c]) < Vector3.Distance(pixels[p].Color, centroids[group]))
                         {
                             group = c;
                         }
