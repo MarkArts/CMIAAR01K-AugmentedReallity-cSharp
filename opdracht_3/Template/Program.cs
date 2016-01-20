@@ -7,210 +7,162 @@ using System.Windows.Forms;
 using System.Drawing;
 using ImageUtilities;
 using System.Numerics;
+using System.Diagnostics;
 
 namespace Template
 {
     public class Program
-    {                
-        public class Image : Dictionary<Tuple<int, int>, Vector3>
-        {
-            public static Image fromColors(Color[,] img)
-            {
-                Image ret = new Image();
-
-                MultiEach(img, (c, x, y) =>
-                {
-                    ret[Tuple.Create(x, y)] = new Vector3(c.R, c.G, c.B);
-                });
-
-                return ret;
-            }
-
-            public static Image fromClusters(Cluster[] clusters)
-            {
-                Image pixels = new Image();
-                Each(clusters, cluster =>
-                {
-                    foreach (KeyValuePair<Tuple<int, int>, Vector3> pixel in cluster)
-                    {
-                        if(!pixels.ContainsKey(pixel.Key))
-                            pixels.Add(pixel.Key, pixel.Value);
-                    }
-                });
-
-                return pixels;
-            }
-
-            public Color[,] toColors()
-            {            
-                Tuple<int, int> res = this.res();
-                Color[,] img = new Color[res.Item1 +1 , res.Item2 +1];
-
-                foreach (KeyValuePair<Tuple<int, int>, Vector3> pixel in this)
-                {
-                    img[pixel.Key.Item1, pixel.Key.Item2] = Color.FromArgb((int)pixel.Value.X, (int)pixel.Value.Y, (int)pixel.Value.Z);
-                }
-
-                return img;
-            }
-
-            public Tuple<int, int> res()
-            {
-                int x = 0;
-                int y = 0;
-
-                foreach (KeyValuePair<Tuple<int, int>, Vector3> pixel in this)
-                {
-                    if (pixel.Key.Item1 > x)
-                        x = pixel.Key.Item1;
-
-                    if (pixel.Key.Item2 > y)
-                        y = pixel.Key.Item1;
-                }
-
-                return Tuple.Create(x, y);
-            }
-        };
-
-        public class Cluster : Image
-        {
-            public Vector3 centroid;
-
-            public Cluster() : base()
-            {
-                centroid = Vector3.Zero;
-            }
-
-            public void calcCentroid()
-            {
-                Vector3 sum = Vector3.Zero;
-
-                foreach (KeyValuePair<Tuple<int, int>, Vector3> pixel in this)
-                {
-                    sum = Vector3.Add(sum, pixel.Value);
-                }
-
-                this.centroid = Vector3.Divide(sum, this.Count());
-            }
-
-            public Cluster setAllToCentroid()
-            {
-                Cluster c = new Cluster();
-                foreach (KeyValuePair<Tuple<int, int>, Vector3> pixel in this)
-                {
-                    c[pixel.Key] = this.centroid;
-                }
-
-                return c;
-            }
-        };
+    {               
 
         static void Main(string[] args)
         {
-            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"E:\Documents\Visual Studio 2015\Projects\CMIAAR01K-AugmentedReallity-cSharp\opdracht_2\Content\Content\forest.jpg");
+            Color[,] img = ImageUtilities.ImageViewer.LoadImage(@"E:\School\jaar 5\CMIAAR01K\opdracht_3\Content\Content\forest.jpg");
 
-            Cluster[] clusters = kMean(Image.fromColors(img), 2, 2);
-            Image kmeanImage = Image.fromClusters(Map(clusters, c => c.setAllToCentroid()));
+            KMEansPixel[] pixels = colorsToPixels(img);
+            KMEansPixel[] kmeans = kMean(pixels, 6, 3);
+            kmeans = kMean(colorsToPixels(img), 7, 3);
+            kmeans = kMean(colorsToPixels(img), 6, 3);
+            kmeans = kMean(colorsToPixels(img), 7, 3);
+            kmeans = kMean(colorsToPixels(img), 6, 3);
+            kmeans = kMean(colorsToPixels(img), 7, 3);
 
-            Cluster[] clusters2 = kMean(Image.fromColors(img), 8, 4);
-            Image kmeanImage2 = Image.fromClusters(Map(clusters2, c => c.setAllToCentroid()));
+            Color[,] c = pixelsToColors(kmeans);
 
-            ImageUtilities.ImageViewer.DrawImagePair(kmeanImage.toColors(), kmeanImage2.toColors());
+            ImageUtilities.ImageViewer.DrawImagePair(img, c);
         }
 
-        static Cluster[] kMean(Image img, int clustersAmount, int itterations)
+        public struct KMEansPixel
         {
-            Random random = new Random();
-            Cluster[] clusters = new Cluster[clustersAmount];
-            clusters = Map(clusters, x => new Cluster() );
+            public Vector3 Color;
+            public Vector2 Position;
+            public int Group;
 
-            // generate random clusters
-            Each(clusters, x => { x.centroid = new Vector3(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255)); } );
+            public KMEansPixel(Vector3 color, Vector2 position)
+            {
+                Color = color;
+                Position = position;
+                Group = 0;
+            }
+        }
 
+        static KMEansPixel[] kMean(KMEansPixel[] pixels, int clustersAmount, int itterations)
+        {
+            Console.WriteLine(clustersAmount.ToString() + " " + itterations.ToString());
+
+            Random random = new Random(43);
+            Vector3[] centroids = new Vector3[clustersAmount];
+
+            // initialize our centroinds
+            for (int i = 0; i < centroids.Length; i++)
+            {
+                centroids[i] = new Vector3(121, 49, 124);
+               // Console.WriteLine(centroids[i].ToString());
+            }
+
+            centroids[0] = new Vector3(121, 49, 124);
+            centroids[1] = new Vector3(121, 49, 124);
+
+            // We limmit the itterations for performance reasons
             for (int i = 0; i < itterations; i++)
             {
-                foreach (KeyValuePair<Tuple<int, int>, Vector3> pixel in img)
+                // assing pixels to groups
+                for (int p = 0; p < pixels.GetLength(0); p++)
                 {
-                    closestCluster(clusters, pixel.Value)[pixel.Key] = pixel.Value;
+                    int group = 0;
+
+                    for (int c = 0; c < centroids.Length; c++) // <--- but this c# lolz
+                    {
+                        if (!Vector3.Equals(centroids[group], centroids[c]) && Vector3.Distance(pixels[p].Color, centroids[c]) < Vector3.Distance(pixels[p].Color, centroids[group]))
+                        {
+                            group = c;
+                        }
+                    }
+
+                    pixels[p].Group = group;
                 }
 
-                Each(clusters, x => { x.calcCentroid(); });
+                // re calculate centroids
+                // init the new centroids as zero so we can add to them
+                Vector3[] newCentroids = new Vector3[centroids.Length];
+                int[] newCentroidsCount = new int[newCentroids.Length]; // we keep track of the amount of pixels in each centroid so we can divide the sum of all pixels in a group with it
+                for (int c = 0; c < newCentroids.Length; c++)
+                {
+                    newCentroids[c] = Vector3.Zero;
+                    newCentroidsCount[c] = 0;
+                }
+
+                // add the pixels to their new centroid
+                for (int p = 0; p < pixels.Length; p++)
+                {
+                    newCentroids[pixels[p].Group] = Vector3.Add(newCentroids[pixels[p].Group], pixels[p].Color);
+                    newCentroidsCount[pixels[p].Group]++;
+                }
+
+                // divide the centroids with their count so we get the average
+                for (int c = 0; c < newCentroids.Length; c++)
+                {
+                    // no elements where assignet to this centroid
+                    if(newCentroidsCount[c] == 0)
+                    {
+                        newCentroids[c] = centroids[c];
+                    }
+                    else
+                    {
+                        newCentroids[c] = Vector3.Divide(newCentroids[c], newCentroidsCount[c]);
+                    }                
+                }
+
+                centroids = newCentroids;
             }
 
-            return clusters;
+            // we set the pixels to their centroid so we can visualy debug it
+            centerPixelToCentroid(pixels, centroids);
+
+            return pixels;
         }
 
-        static Cluster closestCluster(Cluster[] clusters, Vector3 pixel) {
-            Cluster ret = (Cluster)clusters.GetValue(0);
-            float closestDistance = Vector3.Distance(pixel, ret.centroid);
-
-            for (int i = 0; i < clusters.GetLength(0); i++)
+        static KMEansPixel[] centerPixelToCentroid(KMEansPixel[] pixels, Vector3[] centroids)
+        {
+            for (int p = 0; p < pixels.Length; p++)
             {
-                float distance = Vector3.Distance(pixel, clusters[i].centroid);
-                if (distance < closestDistance)
+                pixels[p].Color = centroids[pixels[p].Group];
+            }
+
+            return pixels;
+        }
+
+        static KMEansPixel[] colorsToPixels(Color[,] img)
+        {
+            KMEansPixel[] pixels = new KMEansPixel[img.GetLength(0) * img.GetLength(1)];
+
+            int counter = 0; // maybe we could calculate this in the loops
+            for (int x = 0; x < img.GetLength(0); x++)
+            {
+                for (int y = 0; y < img.GetLength(1); y++)
                 {
-                    ret = clusters[i];
-                    closestDistance = distance;
+                    pixels[counter] = new KMEansPixel(
+                        new Vector3(img[x, y].R, img[x, y].G, img[x, y].B),
+                        new Vector2(x, y)
+                    );
+                    counter++;
                 }
             }
 
-            return ret;
+            return pixels;
         }
 
-        static float lerp(float value1, float value2, float amount)
+        static Color[,] pixelsToColors(KMEansPixel[] pixels)
         {
-            return value1 + (value2 - value1) * amount;
-        }
-        static float clamp(float val, float min, float max)
-        {
-            if (val < min) return min;
-            if (val > max) return max;
-            return val;
-        }
+            // because we don't shuffle the pixels array after creation we can assume the last pixel in it is the bottom right
+            Color[,] colors = new Color[(int)pixels.Last().Position.X + 1, (int)pixels.Last().Position.Y + 1];
 
-        static T[] Map<T>(T[] coll, Func<T, T> f)
-        {
-            T[] ret = new T[coll.GetLength(0)];
-            for (int x = 0; x < coll.GetLength(0); x += 1)
+            for (int p = 0; p < pixels.Length; p++)
             {
-                ret[x] = f(coll[x]);
+                KMEansPixel pixel = pixels[p]; // find out if a array lookup is cheaper then the struct copy
+                colors[(int)pixel.Position.X, (int)pixel.Position.Y] = Color.FromArgb((int)pixel.Color.X, (int)pixel.Color.Y, (int)pixel.Color.Z);
             }
 
-            return ret;
+            return colors;
         }
-
-        static void Each<T>(T[] coll, Action<T> f)
-        {
-            for (int x = 0; x < coll.GetLength(0); x += 1)
-            {
-                f(coll[x]);
-            }
-        }
-
-        static R[,] MultiMap<T, R>(T[,] colors, Func<T, int, int, R> f)
-        {
-            R[,] ret = new R[colors.GetLength(0), colors.GetLength(1)];
-            for (int x = 0; x < colors.GetLength(0); x += 1)
-            {
-                for (int y = 0; y < colors.GetLength(1); y += 1)
-                {
-                    ret[x, y] = f(colors[x, y], x, y );
-                }
-            }
-
-            return ret;
-        }
-
-        static void MultiEach<T>(T[,] colors, Action<T, int, int> f)
-        {
-            for (int x = 0; x < colors.GetLength(0); x += 1)
-            {
-                for (int y = 0; y < colors.GetLength(1); y += 1)
-                {
-                    f(colors[x, y], x, y);
-                }
-            }
-        }
-
     }
 }
